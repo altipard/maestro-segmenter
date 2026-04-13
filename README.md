@@ -2,6 +2,18 @@
 
 gRPC service for text segmentation. Splits text into chunks using semantic boundaries with Markdown awareness — optimized for RAG pipelines.
 
+## Why gRPC?
+
+Text segmentation is a tight inner-loop operation in RAG pipelines — called repeatedly with varying payload sizes. gRPC is a natural fit:
+
+- **Binary-native** — Protobuf encodes text and parameters without JSON serialization overhead. No escaping, no string quoting, no Base64 for binary content.
+- **Strongly typed contracts** — The `.proto` file defines the exact request/response shape. Segment length, overlap, and file content are typed fields — not string-encoded JSON that needs runtime parsing.
+- **Connection multiplexing** — HTTP/2 lets Maestro send many segmentation requests over a single connection. Useful when processing a batch of documents in parallel.
+- **Language-agnostic** — The same `.proto` contract generates clients for Python, Go, TypeScript, Rust. You can call this service from anything, or rewrite the service in another language without changing clients.
+- **Low-latency** — Binary framing and header compression keep per-request overhead minimal. For a service that may be called hundreds of times during a single document ingestion pipeline, this adds up.
+
+For Maestro, gRPC provides the same interface pattern across both the Extractor and Segmenter services — one protocol, one contract style, consistent tooling.
+
 ## Architecture
 
 ```
