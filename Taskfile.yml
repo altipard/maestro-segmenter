@@ -3,7 +3,7 @@
 version: "3"
 
 vars:
-  REPOSITORY: ghcr.io/daltiparmak/maestro-segmenter
+  REPOSITORY: ghcr.io/altipard/maestro-segmenter
 
 tasks:
   run:
