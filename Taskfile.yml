@@ -1,0 +1,22 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  REPOSITORY: ghcr.io/daltiparmak/maestro-segmenter
+
+tasks:
+  run:
+    desc: Run the segmenter service locally via Docker
+    cmds:
+      - docker run -it --rm -p 50051:50051 {{.REPOSITORY}}
+
+  generate:
+    desc: Regenerate protobuf Python files from .proto source
+    cmds:
+      - python -m grpc_tools.protoc -I. --python_out=. --pyi_out=. --grpc_python_out=. segmenter.proto
+
+  publish:
+    desc: Build and push multi-arch Docker image
+    cmds:
+      - docker buildx build . --no-cache --push --platform linux/amd64,linux/arm64 --tag {{.REPOSITORY}}:latest
